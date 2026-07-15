@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
     console.log("new access", access);
     switch (access) {
       case "Approved":
-        console.log("member approved");
+        console.log("member approved", id);
         await memberstack.members.addFreePlan({
           id: memberstackUser.data.id,
           data: {
@@ -188,12 +188,12 @@ export async function GET(request: NextRequest) {
           headers: {
             "Content-Type": "text/html",
           },
-        }
+        },
       );
     }
     return NextResponse.json(
       { error: err },
-      { status: (err as any).status || 500 }
+      { status: (err as any).status || 500 },
     );
   }
 }
