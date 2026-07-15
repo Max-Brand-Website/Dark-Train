@@ -6,7 +6,7 @@ import airtable from "airtable";
 const base = airtable.base(process.env.AIRTABLE_BASE_ID!);
 // Initialize Memberstack outside the handler
 const memberstack = memberstackAdmin.init(
-  process.env.MEMBERSTACK_SECRET_KEY || ""
+  process.env.MEMBERSTACK_SECRET_KEY || "",
 );
 
 // Important: Disable body parsing
@@ -18,7 +18,7 @@ export const config = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -31,6 +31,8 @@ export default async function handler(
       chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
     }
     const rawBody = Buffer.concat(chunks).toString("utf8");
+
+    console.log({ rawBody });
 
     // Extract the specific headers Svix needs
     const svixHeaders = {
@@ -65,7 +67,7 @@ export default async function handler(
           // Map region name from Webflow to Airtable ID
           const region = regions.find(
             (region) =>
-              region.fields.Name === data.payload.customFields?.["region"]
+              region.fields.Name === data.payload.customFields?.["region"],
           )!;
 
           const response = await base("Users").create([
