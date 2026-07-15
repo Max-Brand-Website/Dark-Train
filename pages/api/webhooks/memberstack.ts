@@ -57,34 +57,46 @@ export default async function handler(
       switch (data.event) {
         case "member.created":
           console.log("New User Data", data.payload);
+          let region;
 
-          const regions = await base("Regions")
-            .select({
-              maxRecords: 100,
-            })
-            .all();
+          try {
+            const regions = await base("Regions")
+              .select({
+                maxRecords: 100,
+              })
+              .all();
+            region = regions.find(
+              (region) =>
+                region.fields.Name === data.payload.customFields?.["region"],
+            )!;
+          } catch (error) {
+            console.log(error);
+            return res.status(401).json({ error: "Could Not Find Regions" });
+          }
 
           // Map region name from Webflow to Airtable ID
-          const region = regions.find(
-            (region) =>
-              region.fields.Name === data.payload.customFields?.["region"],
-          )!;
-
-          const response = await base("Users").create([
-            {
-              fields: {
-                Email: data.payload.auth.email,
-                Name: data.payload.customFields?.["name"] || "",
-                Company: data.payload.customFields?.["company"] || "",
-                Reason: data.payload.customFields?.["reason"] || "",
-                Region: region ? [region.id] : undefined,
-                "Contact Name":
-                  data.payload.customFields?.["contact-name"] || "",
-                "Contact Email":
-                  data.payload.customFields?.["contact-email"] || "",
+          try {
+            const response = await base("Users").create([
+              {
+                fields: {
+                  Email: data.payload.auth.email,
+                  Name: data.payload.customFields?.["name"] || "",
+                  Company: data.payload.customFields?.["company"] || "",
+                  Reason: data.payload.customFields?.["reason"] || "",
+                  Region: region ? [region.id] : undefined,
+                  "Contact Name":
+                    data.payload.customFields?.["contact-name"] || "",
+                  "Contact Email":
+                    data.payload.customFields?.["contact-email"] || "",
+                },
               },
-            },
-          ]);
+            ]);
+
+            console.log({ response });
+          } catch (error) {
+            console.log({ error });
+            return res.status(401).json({ error: "Could Not Save User" });
+          }
 
           // Handle member creation
           break;

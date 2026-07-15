@@ -9,3 +9,7 @@ The email template is found at `/emails/portal-password.tsx`. This is written wi
 ### Deploying to production
 
 Commits to `main` will automatically deploy to production. This happens inside of our Vercel workspace. If you run into any issues, test locally with `npm run build` to mimic a production build.
+
+How to get the Env Keys
+AIRTABLE_BASE_ID: https://airtable.com/developers/web/api/introduction
+Click on the table you want to use
